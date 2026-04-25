@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand (from screenshots) -->
+    <color name="zpl_blue_dark">#0F3BB0</color>
+    <color name="zpl_blue">#1D4ED8</color>
+    <color name="zpl_blue_light">#4D8BF5</color>
+    <color name="zpl_blue_sky">#7DB4F8</color>
+
+    <color name="zpl_red">#E63946</color>
+    <color name="zpl_red_dark">#B91C1C</color>
+    <color name="zpl_red_light">#F87171</color>
+
+    <color name="zpl_pitch_green">#3FB83F</color>
+    <color name="zpl_pitch_dark">#2A8F2A</color>
+
+    <color name="zpl_gold">#F59E0B</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="ink">#0E1A3B</color>
+    <color name="muted">#94A3B8</color>
+    <color name="surface">#F8FAFC</color>
+    <color name="divider">#DBEAFE</color>
+</resources>

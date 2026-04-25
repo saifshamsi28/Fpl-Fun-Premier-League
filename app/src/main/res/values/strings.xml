@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ZPL Hand Cricket</string>
+
+    <string name="loading">LOADING…</string>
+    <string name="login">Login</string>
+    <string name="signup">Sign up</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+
+    <string name="pick_team">Pick a team to support this season</string>
+    <string name="bonus_matches">5 bonus matches on your team\'s game day</string>
+    <string name="confirm">Confirm</string>
+    <string name="team_lock_note">You can\'t change your team later</string>
+
+    <string name="play_again_tomorrow">PLAY AGAIN TOMORROW ▶</string>
+    <string name="zero_matches_left">0 matches left for today</string>
+    <string name="daily_rewards">DAILY REWARDS</string>
+    <string name="double_the_fun">DOUBLE THE FUN</string>
+    <string name="play_with_friend">PLAY WITH A FRIEND</string>
+    <string name="friendly_subtitle">Unlimited friendly matches without rewards - just pure fun!</string>
+    <string name="friendly_match">FRIENDLY MATCH ▶</string>
+    <string name="your_progress">YOUR PROGRESS</string>
+
+    <string name="finding_player">Finding Player…</string>
+
+    <string name="create_invite">Create a room and invite a friend to join</string>
+    <string name="create_new_room">Create new room</string>
+    <string name="have_code_q">Already have a room code?</string>
+    <string name="join_a_room">Join a room</string>
+    <string name="friendly_disclaimer">Runs scored while playing with your friends are not added to your stats</string>
+
+    <string name="your_room_created">Your room is created</string>
+    <string name="your_room_code">Your room code:</string>
+    <string name="share_or_invite">Share your room code or invite a friend via the link</string>
+    <string name="invite_friend">Invite friend</string>
+    <string name="waiting_for_friend">Waiting for your friend to join</string>
+
+    <string name="join_room_title">Join a room created by your friend</string>
+    <string name="enter_5_digit">Enter 5 digit room code:</string>
+    <string name="dont_have_code">Don\'t have a room code?</string>
+    <string name="join_room">Join room</string>
+
+    <string name="pick_before_timer">Pick a number before the timer runs out</string>
+    <string name="you_are_bowling">You are bowling</string>
+    <string name="you_are_batting">You are batting</string>
+    <string name="waiting_for_opponent_pick">Waiting for the opponent…</string>
+    <string name="need_n_runs">You need %1$d runs to win</string>
+
+    <string name="you_won">YOU WON</string>
+    <string name="you_lost">YOU LOST</string>
+    <string name="continue_btn">Continue</string>
+    <string name="runs">runs</string>
+</resources>

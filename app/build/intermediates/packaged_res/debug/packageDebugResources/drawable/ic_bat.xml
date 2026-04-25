@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="160dp"
+    android:viewportWidth="120"
+    android:viewportHeight="160">
+    <!-- Handle -->
+    <path
+        android:fillColor="#8B5A2B"
+        android:pathData="M55,8 L65,8 L65,70 L55,70 Z"/>
+    <!-- Grip -->
+    <path
+        android:fillColor="#1E293B"
+        android:pathData="M53,18 L67,18 L67,62 L53,62 Z"/>
+    <!-- Bat blade -->
+    <path
+        android:fillColor="#F2B56B"
+        android:pathData="M44,70 L76,70 Q82,70 82,80 L82,148 Q82,154 76,154 L44,154 Q38,154 38,148 L38,80 Q38,70 44,70 Z"/>
+    <!-- Shine -->
+    <path
+        android:fillColor="#FFD6A0"
+        android:pathData="M48,78 L54,78 L54,146 L48,146 Z"/>
+</vector>

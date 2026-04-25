@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- ============== TOP (sky-blue) section ============== -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        android:background="@drawable/bg_stadium_gradient">
+
+        <ImageView
+            android:id="@+id/btnClose"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_gravity="top|start"
+            android:layout_margin="12dp"
+            android:background="@drawable/bg_icon_round_blue"
+            android:padding="10dp"
+            android:src="@drawable/ic_close"
+            android:contentDescription="close"/>
+
+        <com.zpl.handcricket.views.LogoView
+            android:layout_width="80dp"
+            android:layout_height="70dp"
+            android:layout_gravity="top|center_horizontal"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Scoreboard row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:layout_marginTop="80dp"
+            android:orientation="vertical"
+            android:paddingHorizontal="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!-- player 1 pill -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_score_blue"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="8dp"
+                    android:layout_marginEnd="4dp">
+
+                    <TextView
+                        android:id="@+id/tvP1Name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:text="You"/>
+                    <TextView
+                        android:id="@+id/tvP1Role"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:alpha="0.85"
+                        android:textSize="13sp"
+                        android:text="Batting"/>
+                </LinearLayout>
+
+                <!-- player 2 pill -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_score_red"
+                    android:gravity="end"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="8dp"
+                    android:layout_marginStart="4dp">
+
+                    <TextView
+                        android:id="@+id/tvP2Name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:text="Opp"/>
+                    <TextView
+                        android:id="@+id/tvP2Role"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:alpha="0.85"
+                        android:textSize="13sp"
+                        android:text="Bowling"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Ball dots -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/p1Dots"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:gravity="start|center_vertical"/>
+
+                <LinearLayout
+                    android:id="@+id/p2Dots"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:gravity="end|center_vertical"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- "GO MUMBAI" banner -->
+        <TextView
+            android:id="@+id/tvChant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_banner_ribbon"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="6dp"
+            android:text="GO MUMBAI!"
+            android:textColor="@color/zpl_blue_dark"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:visibility="gone"/>
+
+        <!-- Hands row (both players) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="horizontal"
+            android:paddingBottom="24dp">
+
+            <com.zpl.handcricket.views.HandView
+                android:id="@+id/handP1"
+                android:layout_width="140dp"
+                android:layout_height="160dp"/>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+            <com.zpl.handcricket.views.HandView
+                android:id="@+id/handP2"
+                android:layout_width="140dp"
+                android:layout_height="160dp"/>
+        </LinearLayout>
+
+        <!-- Bat overlay for innings switch -->
+        <ImageView
+            android:id="@+id/batOverlay"
+            android:layout_width="120dp"
+            android:layout_height="160dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_bat"
+            android:visibility="gone"
+            android:contentDescription="@null"/>
+
+        <!-- Ball overlay for toss -->
+        <View
+            android:id="@+id/ballOverlay"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_wicket_dot"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/outOverlay"
+            android:layout_width="180dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_wicket_badge"
+            android:gravity="center"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:text="BOWLED"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:visibility="gone"/>
+    </FrameLayout>
+
+    <!-- ============== BOTTOM (pitch-green) section ============== -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:background="@drawable/bg_pitch_green"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="20dp">
+
+        <com.zpl.handcricket.views.TimerRingView
+            android:id="@+id/timerRing"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:id="@+id/tvMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_toast_message"
+            android:gravity="center"
+            android:paddingVertical="8dp"
+            android:text="@string/you_are_batting"
+            android:textColor="@color/ink"/>
+
+        <!-- Num pad -->
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:columnCount="3"
+            android:rowCount="2">
+
+            <Button android:id="@+id/num1" style="@style/NumPadButton"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:text="1"/>
+            <Button android:id="@+id/num2" style="@style/NumPadButton"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:text="2"/>
+            <Button android:id="@+id/num3" style="@style/NumPadButton"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:text="3"/>
+            <Button android:id="@+id/num4" style="@style/NumPadButton"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:text="4"/>
+            <Button android:id="@+id/num5" style="@style/NumPadButton"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:text="5"/>
+            <Button android:id="@+id/num6" style="@style/NumPadButton"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:text="6"/>
+        </GridLayout>
+    </LinearLayout>
+</LinearLayout>

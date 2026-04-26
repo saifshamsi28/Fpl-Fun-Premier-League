@@ -14,6 +14,10 @@ import com.zpl.handcricket.models.AuthResponse;
 import com.zpl.handcricket.R;
 import com.zpl.handcricket.utils.AppState;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
                 setBusy(false);
                 if (!r.isSuccessful() || r.body() == null) {
                     Toast.makeText(LoginActivity.this,
-                            "Auth failed: " + r.code(), Toast.LENGTH_SHORT).show();
+                            friendlyAuthMessage(r, signup), Toast.LENGTH_SHORT).show();
                     return;
                 }
                 AuthResponse body = r.body();
@@ -72,9 +76,43 @@ public class LoginActivity extends AppCompatActivity {
             @Override public void onFailure(Call<AuthResponse> c, Throwable t) {
                 setBusy(false);
                 Toast.makeText(LoginActivity.this,
-                        "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        "Unable to reach the server. Check your connection and try again.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private String friendlyAuthMessage(Response<AuthResponse> response, boolean signup) {
+        String serverMessage = extractServerError(response);
+        if (serverMessage != null) {
+            return serverMessage;
+        }
+        if (response.code() == 409 && signup) {
+            return "That username already exists. Try a different one.";
+        }
+        if (response.code() == 401 && !signup) {
+            return "Invalid username or password.";
+        }
+        if (response.code() == 400) {
+            return signup
+                    ? "Please enter a valid username and password."
+                    : "Please check your login details.";
+        }
+        return signup
+                ? "Unable to sign up right now. Please try again."
+                : "Unable to log in right now. Please try again.";
+    }
+
+    private String extractServerError(Response<AuthResponse> response) {
+        if (response.errorBody() == null) return null;
+        try {
+            String raw = response.errorBody().string();
+            if (raw == null || raw.isBlank()) return null;
+            JSONObject obj = new JSONObject(raw);
+            String message = obj.optString("error", "").trim();
+            return message.isEmpty() ? null : message;
+        } catch (IOException | JSONException | RuntimeException ex) {
+            return null;
+        }
     }
 
     private void setBusy(boolean b) {

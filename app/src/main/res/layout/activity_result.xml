@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="ZPL HAND CRICKET"
+            android:text="FPL HAND CRICKET"
             android:textColor="#64748B"
             android:textSize="11sp"
             android:textStyle="bold"

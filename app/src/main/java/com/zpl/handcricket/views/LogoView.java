@@ -37,7 +37,7 @@ public class LogoView extends View {
         c.drawRoundRect(r, 28, 28, badge);
 
         text.setTextSize(h * 0.36f);
-        c.drawText("ZPL", w/2f, h*0.58f, text);
+        c.drawText("FPL", w/2f, h*0.58f, text);
         text.setTextSize(h * 0.14f);
         c.drawText("HAND CRICKET", w/2f, h*0.78f, text);
 

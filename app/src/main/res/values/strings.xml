@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ZPL Hand Cricket</string>
+    <string name="app_name">FPL Hand Cricket</string>
 
     <string name="loading">LOADING…</string>
     <string name="login">Login</string>

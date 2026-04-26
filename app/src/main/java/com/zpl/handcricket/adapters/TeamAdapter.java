@@ -1,17 +1,19 @@
 package com.zpl.handcricket.adapters;
 
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.view.animation.OvershootInterpolator;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zpl.handcricket.R;
 import com.zpl.handcricket.models.Team;
+import com.zpl.handcricket.utils.TeamAssets;
 
 import java.util.List;
 
@@ -44,35 +46,49 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.VH> {
     @Override
     public void onBindViewHolder(@NonNull VH h, int position) {
         Team t = data.get(position);
-        h.tvName.setText(t.name);
-        h.tvLandmark.setText(t.landmark);
-        int color;
-        try { color = Color.parseColor(t.primaryColor); }
-        catch (Exception e) { color = Color.parseColor("#1D4ED8"); }
-        GradientDrawable gd = new GradientDrawable();
-        gd.setShape(GradientDrawable.OVAL);
-        gd.setColor(color);
-        if (t.id == selectedId) {
-            gd.setStroke(6, Color.parseColor("#F59E0B"));
-        }
-        h.colorDot.setBackground(gd);
+        h.imgTeam.setImageResource(TeamAssets.imageFor(t.code, t.name));
+
+        boolean selected = t.id == selectedId;
+        h.selectionOverlay.setVisibility(selected ? View.VISIBLE : View.GONE);
+        float targetScale = selected ? 1.05f : 1f;
+        h.card.setScaleX(targetScale);
+        h.card.setScaleY(targetScale);
+        h.card.setAlpha(selected ? 1f : 0.96f);
+
         h.itemView.setOnClickListener(v -> {
+            if (selectedId == t.id) {
+                cb.onPick(t);
+                return;
+            }
             selectedId = t.id;
             notifyDataSetChanged();
+            playSelectAnimation(h.card);
             cb.onPick(t);
         });
     }
 
     @Override public int getItemCount() { return data.size(); }
 
+    private void playSelectAnimation(View card) {
+        ObjectAnimator sx = ObjectAnimator.ofFloat(card, View.SCALE_X, 1f, 1.08f, 1.05f);
+        ObjectAnimator sy = ObjectAnimator.ofFloat(card, View.SCALE_Y, 1f, 1.08f, 1.05f);
+        AnimatorSet set = new AnimatorSet();
+        set.playTogether(sx, sy);
+        set.setDuration(220);
+        set.setInterpolator(new OvershootInterpolator(1.1f));
+        set.start();
+    }
+
     static class VH extends RecyclerView.ViewHolder {
-        TextView tvName, tvLandmark;
-        View colorDot;
+        View card;
+        ImageView imgTeam;
+        View selectionOverlay;
+
         VH(View itemView) {
             super(itemView);
-            tvName = itemView.findViewById(R.id.tvName);
-            tvLandmark = itemView.findViewById(R.id.tvLandmark);
-            colorDot = itemView.findViewById(R.id.colorDot);
+            card = itemView.findViewById(R.id.teamCard);
+            imgTeam = itemView.findViewById(R.id.imgTeam);
+            selectionOverlay = itemView.findViewById(R.id.selectionOverlay);
         }
     }
 }

@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/root"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:background="@drawable/bg_card_white"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:foreground="?attr/selectableItemBackground"
+    android:clipToPadding="false"
+    android:clipChildren="false">
 
-    <View
-        android:id="@+id/colorDot"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:background="@drawable/bg_timer_circle"/>
+    <FrameLayout
+        android:id="@+id/teamCard"
+        android:layout_width="match_parent"
+        android:layout_height="132dp"
+        android:background="@drawable/bg_team_card"
+        android:elevation="4dp"
+        android:clipToOutline="true">
 
-    <TextView
-        android:id="@+id/tvName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textColor="@color/ink"
-        android:textSize="16sp"
-        android:textStyle="bold"/>
+        <ImageView
+            android:id="@+id/imgTeam"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:contentDescription="team image"/>
 
-    <TextView
-        android:id="@+id/tvLandmark"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/muted"
-        android:textSize="12sp"/>
-</LinearLayout>
+        <View
+            android:id="@+id/selectionOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/selected_overlay"
+            android:visibility="gone"/>
+    </FrameLayout>
+</FrameLayout>

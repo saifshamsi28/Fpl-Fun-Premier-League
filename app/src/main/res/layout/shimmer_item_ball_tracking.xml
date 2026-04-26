@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.facebook.shimmer.ShimmerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:shimmer_auto_start="true"
+    app:shimmer_base_color="@color/shimmer_base"
+    app:shimmer_highlight_color="@color/shimmer_highlight"
+    app:shimmer_duration="1200">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_ball_row"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:layout_marginBottom="8dp">
+
+        <!-- Ball # -->
+        <View
+            android:layout_width="30dp"
+            android:layout_height="12dp"
+            android:background="@color/shimmer_base"/>
+
+        <!-- Batter pick -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="14dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <View
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:background="@drawable/bg_pick_blue"
+                android:backgroundTint="@color/shimmer_base"/>
+            <View
+                android:layout_width="60dp"
+                android:layout_height="12dp"
+                android:layout_marginStart="8dp"
+                android:background="@color/shimmer_base"/>
+        </LinearLayout>
+
+        <!-- Bowler pick -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end|center_vertical"
+            android:orientation="horizontal">
+            <View
+                android:layout_width="60dp"
+                android:layout_height="12dp"
+                android:layout_marginEnd="8dp"
+                android:background="@color/shimmer_base"/>
+            <View
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:background="@drawable/bg_pick_blue"
+                android:backgroundTint="@color/shimmer_base"/>
+        </LinearLayout>
+
+        <!-- Result -->
+        <View
+            android:layout_width="56dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/bg_stat_pill"
+            android:backgroundTint="@color/shimmer_base"/>
+    </LinearLayout>
+</com.facebook.shimmer.ShimmerFrameLayout>

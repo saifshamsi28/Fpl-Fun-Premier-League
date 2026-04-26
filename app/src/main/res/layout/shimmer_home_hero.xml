@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.facebook.shimmer.ShimmerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:shimmer_auto_start="true"
+    app:shimmer_base_color="@color/shimmer_base"
+    app:shimmer_highlight_color="@color/shimmer_highlight"
+    app:shimmer_duration="1200">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_hero_gradient"
+        android:orientation="vertical"
+        android:padding="22dp"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
+
+            <View
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@drawable/bg_avatar_blue"
+                android:backgroundTint="@color/shimmer_base_dark"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="80dp"
+                    android:layout_height="12dp"
+                    android:background="@color/shimmer_base_dark"/>
+
+                <View
+                    android:layout_width="120dp"
+                    android:layout_height="22dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@color/shimmer_base_dark"/>
+
+                <View
+                    android:layout_width="100dp"
+                    android:layout_height="12dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@color/shimmer_base_dark"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Stat row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:background="@drawable/bg_stat_pill"
+                android:backgroundTint="@color/shimmer_base_dark"/>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="3dp"
+                android:background="@drawable/bg_stat_pill"
+                android:backgroundTint="@color/shimmer_base_dark"/>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/bg_stat_pill"
+                android:backgroundTint="@color/shimmer_base_dark"/>
+        </LinearLayout>
+
+        <!-- Buttons -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/bg_cta_red"
+            android:backgroundTint="@color/shimmer_base_dark"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_cta_ghost"
+            android:backgroundTint="@color/shimmer_base_dark"/>
+    </LinearLayout>
+</com.facebook.shimmer.ShimmerFrameLayout>

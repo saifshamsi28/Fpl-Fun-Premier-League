@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.facebook.shimmer.ShimmerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:shimmer_auto_start="true"
+    app:shimmer_base_color="@color/shimmer_base_dark"
+    app:shimmer_highlight_color="@color/shimmer_highlight_dark"
+    app:shimmer_duration="1200">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp">
+
+        <!-- Banner Shimmer -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/bg_winner_banner"
+            android:backgroundTint="@color/shimmer_base_dark"/>
+
+        <!-- Score cards Shimmer -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="130dp"
+                android:layout_weight="1"
+                android:layout_margin="10dp"
+                android:backgroundTint="@color/shimmer_base_dark"/>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="130dp"
+                android:layout_weight="1"
+                android:layout_margin="10dp"
+                android:backgroundTint="@color/shimmer_base_dark"/>
+        </LinearLayout>
+
+        <!-- Ball Tracking Header Shimmer -->
+        <View
+            android:layout_width="120dp"
+            android:layout_height="18dp"
+            android:layout_marginTop="24dp"
+            android:background="@color/shimmer_base_dark"/>
+
+        <!-- Ball Tracking Items Shimmer -->
+        <include layout="@layout/shimmer_item_ball_tracking" android:layout_marginTop="12dp" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        <include layout="@layout/shimmer_item_ball_tracking" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        <include layout="@layout/shimmer_item_ball_tracking" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+</com.facebook.shimmer.ShimmerFrameLayout>

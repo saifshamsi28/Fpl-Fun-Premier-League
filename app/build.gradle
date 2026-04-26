@@ -13,9 +13,6 @@ android {
         versionCode 1
         versionName "1.0.0"
 
-        // Fill these in via local.properties or Gradle properties:
-        //   BASE_URL=https://your-backend.example.com
-        //   WS_URL=wss://your-backend.example.com/ws/game
         buildConfigField "String", "BASE_URL", "\"${System.getenv('BASE_URL') ?: project.findProperty('BASE_URL') ?: 'https://fpl-backend-89kf.onrender.com'}\""
         buildConfigField "String", "WS_URL",   "\"${System.getenv('WS_URL')   ?: project.findProperty('WS_URL')   ?: 'wss://fpl-backend-89kf.onrender.com/ws/game'}\""
     }
@@ -55,4 +52,7 @@ dependencies {
 
     // Glide
     implementation 'com.github.bumptech.glide:glide:4.16.0'
+
+    // Shimmer
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
 }

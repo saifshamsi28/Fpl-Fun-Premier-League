@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_result_dark"
+    android:background="@drawable/bg_screen_gradient"
     android:orientation="vertical">
 
     <!-- Top bar -->
@@ -20,7 +21,7 @@
             android:id="@+id/btnClose"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@drawable/bg_icon_circle_dark"
+            android:background="@drawable/bg_icon_round_blue"
             android:padding="10dp"
             android:src="@drawable/ic_close"
             android:contentDescription="close"/>
@@ -31,7 +32,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="FPL HAND CRICKET"
-            android:textColor="#64748B"
+            android:textColor="#FFFFFF"
             android:textSize="11sp"
             android:textStyle="bold"
             android:letterSpacing="0.14"/>
@@ -40,176 +41,185 @@
             android:id="@+id/btnShare"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@drawable/bg_icon_circle_dark"
+            android:background="@drawable/bg_icon_round_blue"
             android:padding="10dp"
             android:src="@drawable/ic_share"
             android:contentDescription="share"/>
     </LinearLayout>
 
-    <!-- Scrollable body -->
-    <androidx.core.widget.NestedScrollView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true"
-        android:scrollbars="none">
+        android:layout_weight="1">
 
-        <LinearLayout
-            android:id="@+id/resultContent"
+        <include
+            android:id="@+id/shimmerPage"
+            layout="@layout/shimmer_result_page"
+            android:visibility="gone"/>
+
+        <!-- Scrollable body -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollResult"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingHorizontal="20dp"
-            android:paddingBottom="20dp">
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:scrollbars="none">
 
-            <!-- ── Result banner ── -->
-            <TextView
-                android:id="@+id/tvResult"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:background="@drawable/bg_winner_banner"
-                android:gravity="center"
-                android:paddingVertical="22dp"
-                android:text="YOU WON"
-                android:textColor="#1A0A00"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.1"
-                tools:ignore="HardcodedText"/>
-
-            <!-- ── Score comparison card ── -->
             <LinearLayout
+                android:id="@+id/resultContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/bg_score_pair_card"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingBottom="20dp">
 
-                <!-- P1 score (blue) -->
-                <LinearLayout
-                    android:layout_width="0dp"
+                <!-- ── Result banner ── -->
+                <TextView
+                    android:id="@+id/tvResult"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_player_card_blue"
+                    android:layout_marginTop="28dp"
+                    android:background="@drawable/bg_winner_banner"
                     android:gravity="center"
-                    android:orientation="vertical"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="20dp"
-                    android:layout_margin="10dp">
+                    android:paddingVertical="22dp"
+                    android:text="YOU WON"
+                    android:textColor="#1A0A00"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    tools:ignore="HardcodedText"/>
 
-                    <TextView
-                        android:id="@+id/tvP1Name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="#93C5FD"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.1"
-                        tools:text="SAIF"/>
+                <!-- ── Score comparison card ── -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/tvP1Score"
-                        android:layout_width="wrap_content"
+                    <!-- P1 score (blue) -->
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:textColor="#F1F5F9"
-                        android:textSize="34sp"
-                        android:textStyle="bold"
-                        tools:text="12"/>
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_player_card_blue"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="20dp"
+                        android:layout_margin="10dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                        <TextView
+                            android:id="@+id/tvP1Name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#93C5FD"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.1"
+                            tools:text="SAIF"/>
+
+                        <TextView
+                            android:id="@+id/tvP1Score"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:textColor="#F1F5F9"
+                            android:textSize="34sp"
+                            android:textStyle="bold"
+                            tools:text="12"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="runs"
+                            android:textColor="#60A5FA"
+                            android:textSize="11sp"
+                            android:letterSpacing="0.06"/>
+                    </LinearLayout>
+
+                    <!-- P2 score (red) -->
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="runs"
-                        android:textColor="#60A5FA"
-                        android:textSize="11sp"
-                        android:letterSpacing="0.06"/>
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_player_card_red"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="20dp"
+                        android:layout_margin="10dp">
+
+                        <TextView
+                            android:id="@+id/tvP2Name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#FCA5A5"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.1"
+                            tools:text="ANWAR"/>
+
+                        <TextView
+                            android:id="@+id/tvP2Score"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:textColor="#F1F5F9"
+                            android:textSize="34sp"
+                            android:textStyle="bold"
+                            tools:text="11"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="runs"
+                            android:textColor="#F87171"
+                            android:textSize="11sp"
+                            android:letterSpacing="0.06"/>
+                    </LinearLayout>
                 </LinearLayout>
 
-                <!-- P2 score (red) -->
-                <LinearLayout
-                    android:layout_width="0dp"
+                <!-- ── Ball tracking (hidden by default) ── -->
+                <TextView
+                    android:id="@+id/labelInnings1"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_player_card_red"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="20dp"
-                    android:layout_margin="10dp">
+                    android:layout_marginTop="24dp"
+                    android:text="Innings 1"
+                    android:textColor="#E3F2FD"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:visibility="gone"/>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerInnings1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:nestedScrollingEnabled="false"
+                    android:visibility="gone"/>
 
-                    <TextView
-                        android:id="@+id/tvP2Name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="#FCA5A5"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.1"
-                        tools:text="ANWAR"/>
-
-                    <TextView
-                        android:id="@+id/tvP2Score"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:textColor="#F1F5F9"
-                        android:textSize="34sp"
-                        android:textStyle="bold"
-                        tools:text="11"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="runs"
-                        android:textColor="#F87171"
-                        android:textSize="11sp"
-                        android:letterSpacing="0.06"/>
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/labelInnings2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Innings 2"
+                    android:textColor="#E3F2FD"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:visibility="gone"/>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerInnings2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:nestedScrollingEnabled="false"
+                    android:visibility="gone"/>
             </LinearLayout>
-
-            <!-- ── Hidden views required by ResultActivity ── -->
-            <!-- These are set by renderHeader() but not shown in the redesigned UI -->
-            <TextView android:id="@+id/tvFinalP1Name"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:visibility="gone"/>
-            <TextView android:id="@+id/tvFinalP1Runs"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:visibility="gone"/>
-            <TextView android:id="@+id/tvFinalP2Name"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:visibility="gone"/>
-            <TextView android:id="@+id/tvFinalP2Runs"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:visibility="gone"/>
-
-            <!-- ── Ball tracking (hidden by default per product brief) ── -->
-            <!-- Code in ResultActivity can still populate these if needed -->
-            <TextView
-                android:id="@+id/labelInnings1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"/>
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerInnings1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                android:visibility="gone"/>
-            <TextView
-                android:id="@+id/labelInnings2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"/>
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerInnings2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                android:visibility="gone"/>
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+        </androidx.core.widget.NestedScrollView>
+    </FrameLayout>
 
     <!-- Continue button -->
     <TextView

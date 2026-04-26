@@ -30,58 +30,46 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Post-match summary screen.
- *
- * Entry modes (unchanged):
- *  (a) Live end - MatchContext.lastMatchEnd
- *  (b) History  - EXTRA_MATCH_ID -> API fetch
- *
- * Ball tracking views exist in layout but are hidden by default per product brief.
- * Navigation and data handling are identical to the original.
- */
 public class ResultActivity extends AppCompatActivity {
 
     public static final String EXTRA_MATCH_ID = "match_id";
 
     private TextView tvP1Name, tvP1Score, tvP2Name, tvP2Score, tvResult;
-    private TextView tvFinalP1Name, tvFinalP1Runs, tvFinalP2Name, tvFinalP2Runs;
     private TextView labelInnings1, labelInnings2;
     private RecyclerView recyclerInnings1, recyclerInnings2;
     private TextView btnContinue;
-    private View resultContent;
+    private View resultContent, scrollResult, shimmerPage;
 
-    private final List<BallDetail> inn1 = new ArrayList<>();
-    private final List<BallDetail> inn2 = new ArrayList<>();
+    private BallTrackingAdapter adapter1, adapter2;
 
     @Override
     protected void onCreate(Bundle s) {
         super.onCreate(s);
         setContentView(R.layout.activity_result);
 
-        // -- Bind views --
         tvP1Name      = findViewById(R.id.tvP1Name);
         tvP1Score     = findViewById(R.id.tvP1Score);
         tvP2Name      = findViewById(R.id.tvP2Name);
         tvP2Score     = findViewById(R.id.tvP2Score);
         tvResult      = findViewById(R.id.tvResult);
-        tvFinalP1Name = findViewById(R.id.tvFinalP1Name);
-        tvFinalP1Runs = findViewById(R.id.tvFinalP1Runs);
-        tvFinalP2Name = findViewById(R.id.tvFinalP2Name);
-        tvFinalP2Runs = findViewById(R.id.tvFinalP2Runs);
         labelInnings1  = findViewById(R.id.labelInnings1);
         labelInnings2  = findViewById(R.id.labelInnings2);
         recyclerInnings1 = findViewById(R.id.recyclerInnings1);
         recyclerInnings2 = findViewById(R.id.recyclerInnings2);
         btnContinue    = findViewById(R.id.btnContinue);
         resultContent  = findViewById(R.id.resultContent);
+        scrollResult   = findViewById(R.id.scrollResult);
+        shimmerPage    = findViewById(R.id.shimmerPage);
         ImageView btnClose = findViewById(R.id.btnClose);
         ImageView btnShare = findViewById(R.id.btnShare);
 
+        adapter1 = new BallTrackingAdapter(new ArrayList<>());
+        adapter2 = new BallTrackingAdapter(new ArrayList<>());
+
         recyclerInnings1.setLayoutManager(new LinearLayoutManager(this));
-        recyclerInnings1.setAdapter(new BallTrackingAdapter(inn1));
+        recyclerInnings1.setAdapter(adapter1);
         recyclerInnings2.setLayoutManager(new LinearLayoutManager(this));
-        recyclerInnings2.setAdapter(new BallTrackingAdapter(inn2));
+        recyclerInnings2.setAdapter(adapter2);
 
         btnContinue.setOnClickListener(v -> goHome());
         btnClose.setOnClickListener(v -> goHome());
@@ -91,13 +79,11 @@ public class ResultActivity extends AppCompatActivity {
         if (matchId != null) {
             loadFromApi(matchId);
         } else {
+            shimmerPage.setVisibility(View.GONE);
+            scrollResult.setVisibility(View.VISIBLE);
             loadFromSocketPayload();
         }
     }
-
-    // ---------------------------------------------
-    // Data loading (logic unchanged)
-    // ---------------------------------------------
 
     private void loadFromSocketPayload() {
         JsonObject end = MatchContext.get().lastMatchEnd;
@@ -107,8 +93,8 @@ public class ResultActivity extends AppCompatActivity {
         String youName = "You", oppName = "Opponent";
 
         if (mf != null) {
-            youName = mf.getAsJsonObject("you").get("username").getAsString();
-            oppName = mf.getAsJsonObject("opponent").get("username").getAsString();
+            if (mf.has("you")) youName = mf.getAsJsonObject("you").get("username").getAsString();
+            if (mf.has("opponent")) oppName = mf.getAsJsonObject("opponent").get("username").getAsString();
         }
 
         int p1Runs = 0, p2Runs = 0;
@@ -137,14 +123,19 @@ public class ResultActivity extends AppCompatActivity {
         boolean tie    = winnerId == null;
 
         renderHeader(youName, youRuns, oppName, oppRuns, youWon, tie);
-        // Ball tracking always hidden per product brief
         hideBallSections();
     }
 
     private void loadFromApi(String matchId) {
+        scrollResult.setVisibility(View.GONE);
+        shimmerPage.setVisibility(View.VISIBLE);
+
         ApiClient.get().matchDetail(matchId).enqueue(new Callback<MatchDetail>() {
             @Override
             public void onResponse(Call<MatchDetail> c, Response<MatchDetail> r) {
+                shimmerPage.setVisibility(View.GONE);
+                scrollResult.setVisibility(View.VISIBLE);
+
                 if (!r.isSuccessful() || r.body() == null) {
                     hideBallSections();
                     return;
@@ -157,24 +148,22 @@ public class ResultActivity extends AppCompatActivity {
                         d.opponentRuns,
                         d.won, false);
 
-                // Populate ball data (views hidden but data ready if product enables later)
-                inn1.clear(); inn2.clear();
+                List<BallDetail> inn1 = new ArrayList<>();
+                List<BallDetail> inn2 = new ArrayList<>();
                 if (d.balls != null) {
                     for (BallDetail b : d.balls) {
                         if (b.innings == 1) inn1.add(b); else inn2.add(b);
                     }
                 }
-                recyclerInnings1.getAdapter().notifyDataSetChanged();
-                recyclerInnings2.getAdapter().notifyDataSetChanged();
-
-                // Keep ball sections hidden per product brief
-//                hideBallSections();
+                adapter1.setBalls(inn1);
+                adapter2.setBalls(inn2);
                 showBallSections();
-
             }
 
             @Override
             public void onFailure(Call<MatchDetail> c, Throwable t) {
+                shimmerPage.setVisibility(View.GONE);
+                scrollResult.setVisibility(View.VISIBLE);
                 hideBallSections();
             }
         });
@@ -187,26 +176,13 @@ public class ResultActivity extends AppCompatActivity {
         recyclerInnings2.setVisibility(View.VISIBLE);
     }
 
-
-    // ---------------------------------------------
-    // Rendering
-    // ---------------------------------------------
-
     private void renderHeader(String p1, int p1Runs, String p2, int p2Runs,
                               boolean youWon, boolean tie) {
-        // Score cards
         tvP1Name.setText(p1.toUpperCase());
         tvP1Score.setText(String.valueOf(p1Runs));
         tvP2Name.setText(p2.toUpperCase());
         tvP2Score.setText(String.valueOf(p2Runs));
 
-        // Hidden totals (set for completeness; views are gone)
-        tvFinalP1Name.setText(p1.toUpperCase());
-        tvFinalP1Runs.setText(p1Runs + " runs");
-        tvFinalP2Name.setText(p2.toUpperCase());
-        tvFinalP2Runs.setText(p2Runs + " runs");
-
-        // Result banner
         if (tie) {
             tvResult.setText("MATCH TIED");
             tvResult.setBackgroundResource(R.drawable.bg_tie_banner);
@@ -221,11 +197,9 @@ public class ResultActivity extends AppCompatActivity {
             tvResult.setTextColor(0xFFCBD5E1);
         }
 
-        // Entrance animation
         animateEntrance(youWon, tie);
     }
 
-    /** Slide-up fade-in for content, with a pop on the result banner. */
     private void animateEntrance(boolean won, boolean tie) {
         if (resultContent == null) return;
 
@@ -238,7 +212,6 @@ public class ResultActivity extends AppCompatActivity {
                 .setInterpolator(new DecelerateInterpolator(1.6f))
                 .start();
 
-        // Result banner pops in with overshoot
         tvResult.setScaleX(0.6f);
         tvResult.setScaleY(0.6f);
         tvResult.setAlpha(0f);
@@ -255,38 +228,6 @@ public class ResultActivity extends AppCompatActivity {
         recyclerInnings1.setVisibility(View.GONE);
         labelInnings2.setVisibility(View.GONE);
         recyclerInnings2.setVisibility(View.GONE);
-    }
-
-    // ---------------------------------------------
-    // Helpers (unchanged)
-    // ---------------------------------------------
-
-    private void parseBalls(JsonArray arr, String youName, String oppName) {
-        inn1.clear(); inn2.clear();
-        for (JsonElement el : arr) {
-            if (!el.isJsonObject()) continue;
-            JsonObject o = el.getAsJsonObject();
-            BallDetail b = new BallDetail();
-            b.innings    = optInt(o, "innings", 1);
-            b.ballNo     = optInt(o, "ballNo", 0);
-            b.batterPick = optInt(o, "batterPick", 0);
-            b.bowlerPick = optInt(o, "bowlerPick", 0);
-            b.runs       = optInt(o, "runs", 0);
-            b.wicket     = o.has("wicket") && o.get("wicket").getAsBoolean();
-            b.batterName = optStr(o, "batterName", b.innings == 1 ? youName : oppName);
-            b.bowlerName = optStr(o, "bowlerName", b.innings == 1 ? oppName : youName);
-            if (b.innings == 1) inn1.add(b); else inn2.add(b);
-        }
-    }
-
-    private int optInt(JsonObject o, String k, int d) {
-        try { return o.has(k) && !o.get(k).isJsonNull() ? o.get(k).getAsInt() : d; }
-        catch (Exception e) { return d; }
-    }
-
-    private String optStr(JsonObject o, String k, String d) {
-        try { return o.has(k) && !o.get(k).isJsonNull() ? o.get(k).getAsString() : d; }
-        catch (Exception e) { return d; }
     }
 
     private void shareScore() {

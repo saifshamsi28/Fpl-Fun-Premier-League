@@ -1,16 +1,20 @@
 package com.zpl.handcricket.activities;
 
-import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,7 +24,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.zpl.handcricket.R;
 import com.zpl.handcricket.adapters.MatchHistoryAdapter;
-import com.zpl.handcricket.adapters.SkeletonMatchHistoryAdapter;
 import com.zpl.handcricket.api.ApiClient;
 import com.zpl.handcricket.models.MatchSummary;
 import com.zpl.handcricket.models.PageResponse;
@@ -41,12 +44,10 @@ public class MatchHistoryActivity extends AppCompatActivity {
     private TextView txtCount, txtSortLabel;
     private RecyclerView recycler;
     private View emptyState;
-    private ProgressBar progressLoad;
     private SwipeRefreshLayout swipeRefresh;
 
     private final List<MatchSummary> items = new ArrayList<>();
     private MatchHistoryAdapter adapter;
-    private SkeletonMatchHistoryAdapter skeletonAdapter;
 
     private int page = 0;
     private int totalPages = 1;
@@ -77,7 +78,6 @@ public class MatchHistoryActivity extends AppCompatActivity {
         txtSortLabel = findViewById(R.id.txtSortLabel);
         recycler     = findViewById(R.id.recyclerMatches);
         emptyState   = findViewById(R.id.emptyState);
-        progressLoad = findViewById(R.id.progressLoad);
         swipeRefresh = findViewById(R.id.swipeRefresh);
 
         adapter = new MatchHistoryAdapter(items, m -> {
@@ -85,9 +85,8 @@ public class MatchHistoryActivity extends AppCompatActivity {
             i.putExtra(ResultActivity.EXTRA_MATCH_ID, m.id);
             startActivity(i);
         });
-        skeletonAdapter = new SkeletonMatchHistoryAdapter(5);
         recycler.setLayoutManager(new LinearLayoutManager(this));
-        recycler.setAdapter(skeletonAdapter);
+        recycler.setAdapter(adapter);
 
         btnBack.setOnClickListener(v -> finish());
         btnSort.setOnClickListener(v -> showSortDialog());
@@ -118,7 +117,7 @@ public class MatchHistoryActivity extends AppCompatActivity {
                 LinearLayoutManager lm = (LinearLayoutManager) rv.getLayoutManager();
                 if (lm == null) return;
                 int last = lm.findLastVisibleItemPosition();
-                if (last >= items.size() - 3 && page + 1 < totalPages) {
+                if (last >= adapter.getItemCount() - 3 && page + 1 < totalPages) {
                     page++;
                     loadPage(false);
                 }
@@ -149,19 +148,36 @@ public class MatchHistoryActivity extends AppCompatActivity {
     }
 
     private void showSortDialog() {
-        String[] labels = {"Latest first", "Oldest first", "Highest score"};
-        String[] keys   = {"latest", "oldest", "highest"};
-        int current = 0;
-        for (int i = 0; i < keys.length; i++) if (keys[i].equals(sort)) current = i;
-        new AlertDialog.Builder(this)
-                .setTitle("Sort matches")
-                .setSingleChoiceItems(labels, current, (d, which) -> {
-                    sort = keys[which];
-                    updateSortLabel();
-                    d.dismiss();
-                    reload();
-                })
-                .show();
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.setContentView(R.layout.dialog_sort_matches);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        RadioGroup radioGroup = dialog.findViewById(R.id.radioGroupSort);
+        TextView btnCancel = dialog.findViewById(R.id.btnCancelSort);
+        TextView btnApply = dialog.findViewById(R.id.btnApplySort);
+
+        // Pre-select current sort
+        if ("latest".equals(sort)) radioGroup.check(R.id.radioLatest);
+        else if ("oldest".equals(sort)) radioGroup.check(R.id.radioOldest);
+        else if ("highest".equals(sort)) radioGroup.check(R.id.radioHighest);
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnApply.setOnClickListener(v -> {
+            int selectedId = radioGroup.getCheckedRadioButtonId();
+            if (selectedId == R.id.radioLatest) sort = "latest";
+            else if (selectedId == R.id.radioOldest) sort = "oldest";
+            else if (selectedId == R.id.radioHighest) sort = "highest";
+
+            updateSortLabel();
+            dialog.dismiss();
+            reload();
+        });
+
+        dialog.show();
     }
 
     private void updateSortLabel() {
@@ -174,14 +190,13 @@ public class MatchHistoryActivity extends AppCompatActivity {
     private void reload() {
         page = 0;
         items.clear();
-        adapter.notifyDataSetChanged();
+        adapter.setLoading(true);
         loadPage(true);
     }
 
-    private void loadPage(boolean showSpinner) {
+    private void loadPage(boolean isInitial) {
         if (loading) return;
         loading = true;
-        if (showSpinner && items.isEmpty()) progressLoad.setVisibility(View.VISIBLE);
 
         ApiClient.get().matchHistory(page, PAGE_SIZE, query, filter, sort)
                 .enqueue(new Callback<PageResponse<MatchSummary>>() {
@@ -189,10 +204,10 @@ public class MatchHistoryActivity extends AppCompatActivity {
                     public void onResponse(Call<PageResponse<MatchSummary>> c,
                                            Response<PageResponse<MatchSummary>> r) {
                         loading = false;
-                        progressLoad.setVisibility(View.GONE);
                         swipeRefresh.setRefreshing(false);
 
                         if (!r.isSuccessful() || r.body() == null) {
+                            if (isInitial) adapter.setLoading(false);
                             renderEmpty();
                             return;
                         }
@@ -201,11 +216,7 @@ public class MatchHistoryActivity extends AppCompatActivity {
                         totalItems = body.totalItems;
                         if (body.items != null) items.addAll(body.items);
                         
-                        // Switch from skeleton to real data
-                        if (page == 0) {
-                            recycler.setAdapter(adapter);
-                        }
-                        adapter.notifyDataSetChanged();
+                        adapter.setItems(items);
 
                         txtCount.setText("Showing " + items.size() + " of " + totalItems + " matches");
                         boolean empty = items.isEmpty();
@@ -216,8 +227,8 @@ public class MatchHistoryActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<PageResponse<MatchSummary>> c, Throwable t) {
                         loading = false;
-                        progressLoad.setVisibility(View.GONE);
                         swipeRefresh.setRefreshing(false);
+                        if (isInitial) adapter.setLoading(false);
                         renderEmpty();
                     }
                 });

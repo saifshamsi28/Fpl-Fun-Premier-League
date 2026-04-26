@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.facebook.shimmer.ShimmerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:shimmer_auto_start="true"
+    app:shimmer_base_color="@color/shimmer_base"
+    app:shimmer_highlight_color="@color/shimmer_highlight"
+    app:shimmer_duration="1200">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_match_card"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="14dp"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="10dp"
+        android:baselineAligned="false">
+
+        <!-- You -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <View
+                android:layout_width="60dp"
+                android:layout_height="18dp"
+                android:background="@color/shimmer_base"/>
+            <View
+                android:layout_width="40dp"
+                android:layout_height="12dp"
+                android:layout_marginTop="4dp"
+                android:background="@color/shimmer_base"/>
+        </LinearLayout>
+
+        <!-- Score -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingHorizontal="14dp">
+            <View
+                android:layout_width="50dp"
+                android:layout_height="22dp"
+                android:background="@color/shimmer_base"/>
+            <View
+                android:layout_width="35dp"
+                android:layout_height="10dp"
+                android:layout_marginTop="4dp"
+                android:background="@color/shimmer_base"/>
+        </LinearLayout>
+
+        <!-- Opponent + badge -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="end">
+            <View
+                android:layout_width="60dp"
+                android:layout_height="18dp"
+                android:background="@color/shimmer_base"/>
+            <View
+                android:layout_width="45dp"
+                android:layout_height="16dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_stat_pill"
+                android:backgroundTint="@color/shimmer_base"/>
+        </LinearLayout>
+    </LinearLayout>
+</com.facebook.shimmer.ShimmerFrameLayout>

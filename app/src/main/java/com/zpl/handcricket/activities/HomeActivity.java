@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import android.view.ViewGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,12 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zpl.handcricket.R;
 import com.zpl.handcricket.adapters.RecentMatchAdapter;
-import com.zpl.handcricket.adapters.SkeletonRecentMatchAdapter;
 import com.zpl.handcricket.api.ApiClient;
 import com.zpl.handcricket.models.MatchSummary;
 import com.zpl.handcricket.models.User;
 import com.zpl.handcricket.utils.AppState;
-import com.zpl.handcricket.utils.SkeletonManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +29,9 @@ public class HomeActivity extends AppCompatActivity {
     private TextView txtStatPlayed, txtStatWon, txtStatWinRate;
     private TextView btnPlayRanked, btnPlayFriendly, btnViewAll;
     private RecyclerView recyclerRecent;
-    private View emptyRecent;
-    private ViewGroup rootContainer;
+    private View emptyRecent, layoutHero, shimmerHero;
 
-    private final List<MatchSummary> recent = new ArrayList<>();
     private RecentMatchAdapter adapter;
-    private SkeletonRecentMatchAdapter skeletonAdapter;
 
     @Override
     protected void onCreate(Bundle s) {
@@ -56,11 +50,12 @@ public class HomeActivity extends AppCompatActivity {
         btnViewAll      = findViewById(R.id.btnViewAll);
         recyclerRecent  = findViewById(R.id.recyclerRecent);
         emptyRecent     = findViewById(R.id.emptyRecent);
+        layoutHero      = findViewById(R.id.layoutHero);
+        shimmerHero     = findViewById(R.id.shimmerHero);
 
-        adapter = new RecentMatchAdapter(recent, m -> openResult(m.id));
-        skeletonAdapter = new SkeletonRecentMatchAdapter(3);
+        adapter = new RecentMatchAdapter(new ArrayList<>(), m -> openResult(m.id));
         recyclerRecent.setLayoutManager(new LinearLayoutManager(this));
-        recyclerRecent.setAdapter(skeletonAdapter);
+        recyclerRecent.setAdapter(adapter);
 
         btnPlayRanked.setOnClickListener(v ->
                 startActivity(new Intent(this, MatchmakingActivity.class)));
@@ -68,6 +63,9 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(new Intent(this, FriendMatchActivity.class)));
         btnViewAll.setOnClickListener(v ->
                 startActivity(new Intent(this, MatchHistoryActivity.class)));
+
+        txtAvatar.setOnClickListener(v ->
+                startActivity(new Intent(this, ProfileActivity.class)));
     }
 
     @Override
@@ -78,14 +76,22 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void refreshProfile() {
+        layoutHero.setVisibility(View.GONE);
+        shimmerHero.setVisibility(View.VISIBLE);
+
         ApiClient.get().me().enqueue(new Callback<User>() {
             @Override public void onResponse(Call<User> c, Response<User> r) {
+                shimmerHero.setVisibility(View.GONE);
+                layoutHero.setVisibility(View.VISIBLE);
                 if (!r.isSuccessful() || r.body() == null) return;
                 User u = r.body();
                 AppState.get().setCachedUser(u);
                 bind(u);
             }
-            @Override public void onFailure(Call<User> c, Throwable t) { }
+            @Override public void onFailure(Call<User> c, Throwable t) {
+                shimmerHero.setVisibility(View.GONE);
+                layoutHero.setVisibility(View.VISIBLE);
+            }
         });
     }
 
@@ -93,7 +99,9 @@ public class HomeActivity extends AppCompatActivity {
         String name = u.username != null ? u.username : "Player";
         txtUserName.setText(name);
         txtAvatar.setText(name.substring(0, 1).toUpperCase());
-        txtTeam.setText(u.teamId != null ? ("TEAM #" + u.teamId) : "NO TEAM");
+        
+        setTeamName(u.teamId);
+
         txtRank.setText("#" + Math.max(1, 2000 - u.matchesWon * 15));
 
         txtStatPlayed.setText(String.valueOf(u.matchesPlayed));
@@ -102,31 +110,55 @@ public class HomeActivity extends AppCompatActivity {
                 ? (int) Math.round(u.matchesWon * 100.0 / u.matchesPlayed) : 0;
         txtStatWinRate.setText(rate + "%");
 
-        // Ranked is always available (same as friendly mode).
         btnPlayRanked.setAlpha(1f);
         btnPlayRanked.setClickable(true);
         btnPlayRanked.setText("PLAY RANKED MATCH");
     }
 
+    private void setTeamName(Integer teamId) {
+        if (teamId == null) {
+            txtTeam.setText("NO TEAM");
+            return;
+        }
+        String code = switch (teamId) {
+            case 1 -> "MI";
+            case 2 -> "SRH";
+            case 3 -> "DC";
+            case 4 -> "KKR";
+            case 5 -> "RCB";
+            case 6 -> "CSK";
+            case 7 -> "LSG";
+            case 8 -> "GT";
+            case 9 -> "PBKS";
+            case 10 -> "RR";
+            default -> "T" + teamId;
+        };
+        txtTeam.setText("TEAM : " + code);
+    }
+
     private void loadRecent() {
+        adapter.setLoading(true);
+        emptyRecent.setVisibility(View.GONE);
+        recyclerRecent.setVisibility(View.VISIBLE);
+
         ApiClient.get().recentMatches(3).enqueue(new Callback<List<MatchSummary>>() {
             @Override
             public void onResponse(Call<List<MatchSummary>> c, Response<List<MatchSummary>> r) {
-                recent.clear();
-                if (r.isSuccessful() && r.body() != null) recent.addAll(r.body());
-                
-                // Switch from skeleton to real data
-                if (recent.isEmpty()) {
+                if (r.isSuccessful() && r.body() != null) {
+                    List<MatchSummary> body = r.body();
+                    adapter.setItems(body);
+                    boolean empty = body.isEmpty();
+                    emptyRecent.setVisibility(empty ? View.VISIBLE : View.GONE);
+                    recyclerRecent.setVisibility(empty ? View.GONE : View.VISIBLE);
+                } else {
+                    adapter.setLoading(false);
                     emptyRecent.setVisibility(View.VISIBLE);
                     recyclerRecent.setVisibility(View.GONE);
-                } else {
-                    emptyRecent.setVisibility(View.GONE);
-                    recyclerRecent.setAdapter(adapter);
-                    adapter.notifyDataSetChanged();
                 }
             }
             @Override
             public void onFailure(Call<List<MatchSummary>> c, Throwable t) {
+                adapter.setLoading(false);
                 emptyRecent.setVisibility(View.VISIBLE);
                 recyclerRecent.setVisibility(View.GONE);
             }

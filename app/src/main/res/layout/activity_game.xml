@@ -185,6 +185,13 @@
             android:background="@drawable/bg_wicket_dot"
             android:visibility="gone"/>
 
+        <View
+            android:id="@+id/outFlashOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#80FF3B30"
+            android:visibility="gone"/>
+
         <TextView
             android:id="@+id/outOverlay"
             android:layout_width="180dp"

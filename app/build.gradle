@@ -16,8 +16,8 @@ android {
         // Fill these in via local.properties or Gradle properties:
         //   BASE_URL=https://your-backend.example.com
         //   WS_URL=wss://your-backend.example.com/ws/game
-        buildConfigField "String", "BASE_URL", "\"${System.getenv('BASE_URL') ?: project.findProperty('BASE_URL') ?: 'http://10.163.3.176:8080'}\""
-        buildConfigField "String", "WS_URL",   "\"${System.getenv('WS_URL')   ?: project.findProperty('WS_URL')   ?: 'ws://10.163.3.176:8080/ws/game'}\""
+        buildConfigField "String", "BASE_URL", "\"${System.getenv('BASE_URL') ?: project.findProperty('BASE_URL') ?: 'https://fpl-backend-89kf.onrender.com'}\""
+        buildConfigField "String", "WS_URL",   "\"${System.getenv('WS_URL')   ?: project.findProperty('WS_URL')   ?: 'wss://fpl-backend-89kf.onrender.com/ws/game'}\""
     }
 
     buildTypes {

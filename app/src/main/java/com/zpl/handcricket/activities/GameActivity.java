@@ -44,6 +44,7 @@ public class GameActivity extends AppCompatActivity implements GameSocket.Listen
     private HandView handP1, handP2;
     private ImageView btnClose, batOverlay;
     private View ballOverlay;
+    private View outFlashOverlay;
     private TextView outOverlay;
 
     // -- bottom ---
@@ -101,6 +102,7 @@ public class GameActivity extends AppCompatActivity implements GameSocket.Listen
         btnClose = findViewById(R.id.btnClose);
         batOverlay = findViewById(R.id.batOverlay);
         ballOverlay = findViewById(R.id.ballOverlay);
+        outFlashOverlay = findViewById(R.id.outFlashOverlay);
         outOverlay = findViewById(R.id.outOverlay);
         timerRing = findViewById(R.id.timerRing);
         tvMessage = findViewById(R.id.tvMessage);
@@ -477,6 +479,8 @@ public class GameActivity extends AppCompatActivity implements GameSocket.Listen
     }
 
     private void showOutPhase() {
+        triggerOutFlash();
+
         outOverlay.setVisibility(View.VISIBLE);
         outOverlay.setScaleX(0.35f);
         outOverlay.setScaleY(0.35f);
@@ -490,6 +494,23 @@ public class GameActivity extends AppCompatActivity implements GameSocket.Listen
                 .start();
         ui.postDelayed(() -> outOverlay.animate().alpha(0f).setDuration(260).withEndAction(() -> outOverlay.setVisibility(View.GONE)).start(), 3000L);
     }
+
+            private void triggerOutFlash() {
+            if (outFlashOverlay == null) return;
+            outFlashOverlay.setVisibility(View.VISIBLE);
+            outFlashOverlay.setAlpha(0f);
+            outFlashOverlay.animate().cancel();
+
+            outFlashOverlay.animate()
+                .alpha(1f)
+                .setDuration(120)
+                .withEndAction(() -> outFlashOverlay.animate()
+                    .alpha(0f)
+                    .setDuration(420)
+                    .withEndAction(() -> outFlashOverlay.setVisibility(View.GONE))
+                    .start())
+                .start();
+            }
 
     private String buildBallKey(JsonObject d) {
         JsonObject mf = MatchContext.get().matchFound;

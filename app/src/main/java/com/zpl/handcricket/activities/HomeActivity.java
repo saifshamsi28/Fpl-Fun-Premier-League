@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.view.ViewGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,10 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zpl.handcricket.R;
 import com.zpl.handcricket.adapters.RecentMatchAdapter;
+import com.zpl.handcricket.adapters.SkeletonRecentMatchAdapter;
 import com.zpl.handcricket.api.ApiClient;
 import com.zpl.handcricket.models.MatchSummary;
 import com.zpl.handcricket.models.User;
 import com.zpl.handcricket.utils.AppState;
+import com.zpl.handcricket.utils.SkeletonManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +33,11 @@ public class HomeActivity extends AppCompatActivity {
     private TextView btnPlayRanked, btnPlayFriendly, btnViewAll;
     private RecyclerView recyclerRecent;
     private View emptyRecent;
+    private ViewGroup rootContainer;
 
     private final List<MatchSummary> recent = new ArrayList<>();
     private RecentMatchAdapter adapter;
+    private SkeletonRecentMatchAdapter skeletonAdapter;
 
     @Override
     protected void onCreate(Bundle s) {
@@ -53,8 +58,9 @@ public class HomeActivity extends AppCompatActivity {
         emptyRecent     = findViewById(R.id.emptyRecent);
 
         adapter = new RecentMatchAdapter(recent, m -> openResult(m.id));
+        skeletonAdapter = new SkeletonRecentMatchAdapter(3);
         recyclerRecent.setLayoutManager(new LinearLayoutManager(this));
-        recyclerRecent.setAdapter(adapter);
+        recyclerRecent.setAdapter(skeletonAdapter);
 
         btnPlayRanked.setOnClickListener(v ->
                 startActivity(new Intent(this, MatchmakingActivity.class)));
@@ -108,9 +114,16 @@ public class HomeActivity extends AppCompatActivity {
             public void onResponse(Call<List<MatchSummary>> c, Response<List<MatchSummary>> r) {
                 recent.clear();
                 if (r.isSuccessful() && r.body() != null) recent.addAll(r.body());
-                adapter.notifyDataSetChanged();
-                emptyRecent.setVisibility(recent.isEmpty() ? View.VISIBLE : View.GONE);
-                recyclerRecent.setVisibility(recent.isEmpty() ? View.GONE : View.VISIBLE);
+                
+                // Switch from skeleton to real data
+                if (recent.isEmpty()) {
+                    emptyRecent.setVisibility(View.VISIBLE);
+                    recyclerRecent.setVisibility(View.GONE);
+                } else {
+                    emptyRecent.setVisibility(View.GONE);
+                    recyclerRecent.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                }
             }
             @Override
             public void onFailure(Call<List<MatchSummary>> c, Throwable t) {

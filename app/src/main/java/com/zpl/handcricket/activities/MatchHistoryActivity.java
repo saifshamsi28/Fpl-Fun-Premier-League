@@ -20,6 +20,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.zpl.handcricket.R;
 import com.zpl.handcricket.adapters.MatchHistoryAdapter;
+import com.zpl.handcricket.adapters.SkeletonMatchHistoryAdapter;
 import com.zpl.handcricket.api.ApiClient;
 import com.zpl.handcricket.models.MatchSummary;
 import com.zpl.handcricket.models.PageResponse;
@@ -45,6 +46,7 @@ public class MatchHistoryActivity extends AppCompatActivity {
 
     private final List<MatchSummary> items = new ArrayList<>();
     private MatchHistoryAdapter adapter;
+    private SkeletonMatchHistoryAdapter skeletonAdapter;
 
     private int page = 0;
     private int totalPages = 1;
@@ -83,8 +85,9 @@ public class MatchHistoryActivity extends AppCompatActivity {
             i.putExtra(ResultActivity.EXTRA_MATCH_ID, m.id);
             startActivity(i);
         });
+        skeletonAdapter = new SkeletonMatchHistoryAdapter(5);
         recycler.setLayoutManager(new LinearLayoutManager(this));
-        recycler.setAdapter(adapter);
+        recycler.setAdapter(skeletonAdapter);
 
         btnBack.setOnClickListener(v -> finish());
         btnSort.setOnClickListener(v -> showSortDialog());
@@ -197,6 +200,11 @@ public class MatchHistoryActivity extends AppCompatActivity {
                         totalPages = Math.max(body.totalPages, 1);
                         totalItems = body.totalItems;
                         if (body.items != null) items.addAll(body.items);
+                        
+                        // Switch from skeleton to real data
+                        if (page == 0) {
+                            recycler.setAdapter(adapter);
+                        }
                         adapter.notifyDataSetChanged();
 
                         txtCount.setText("Showing " + items.size() + " of " + totalItems + " matches");

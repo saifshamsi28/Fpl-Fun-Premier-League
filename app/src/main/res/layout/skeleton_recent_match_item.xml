@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_match_card"
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="14dp"
+    android:gravity="center_vertical"
+    android:layout_marginBottom="10dp">
+
+    <!-- You -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="50dp"
+            android:layout_height="15dp"
+            android:background="@drawable/skeleton_shimmer"
+            android:layout_marginBottom="6dp"/>
+
+        <View
+            android:layout_width="60dp"
+            android:layout_height="11dp"
+            android:background="@drawable/skeleton_shimmer"/>
+    </LinearLayout>
+
+    <!-- Score -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingHorizontal="14dp">
+
+        <View
+            android:layout_width="50dp"
+            android:layout_height="18dp"
+            android:background="@drawable/skeleton_shimmer"
+            android:layout_marginBottom="6dp"/>
+
+        <View
+            android:layout_width="40dp"
+            android:layout_height="10dp"
+            android:background="@drawable/skeleton_shimmer"/>
+    </LinearLayout>
+
+    <!-- Opponent -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="end">
+
+        <View
+            android:layout_width="50dp"
+            android:layout_height="15dp"
+            android:background="@drawable/skeleton_shimmer"
+            android:layout_marginBottom="6dp"
+            android:layout_gravity="end"/>
+
+        <View
+            android:layout_width="60dp"
+            android:layout_height="18dp"
+            android:background="@drawable/skeleton_shimmer"
+            android:layout_gravity="end"/>
+    </LinearLayout>
+</LinearLayout>

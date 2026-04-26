@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_screen_gradient"
+    android:fillViewport="true"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="48dp"
+        android:paddingBottom="40dp">
+
+        <!-- Top bar skeleton -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="16dp"
+                android:layout_weight="1"
+                android:background="@drawable/skeleton_shimmer"
+                android:layout_marginEnd="8dp"/>
+
+            <View
+                android:layout_width="80dp"
+                android:layout_height="28dp"
+                android:background="@drawable/skeleton_shimmer"
+                android:radius="14dp"/>
+        </LinearLayout>
+
+        <!-- HERO CARD SKELETON -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_hero_gradient"
+            android:orientation="vertical"
+            android:padding="22dp">
+
+            <!-- Avatar + username -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:background="@drawable/skeleton_shimmer"
+                    android:radius="28dp"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="60dp"
+                        android:layout_height="12dp"
+                        android:background="@drawable/skeleton_shimmer"
+                        android:layout_marginBottom="4dp"/>
+
+                    <View
+                        android:layout_width="140dp"
+                        android:layout_height="22dp"
+                        android:background="@drawable/skeleton_shimmer"
+                        android:layout_marginBottom="6dp"/>
+
+                    <View
+                        android:layout_width="100dp"
+                        android:layout_height="12dp"
+                        android:background="@drawable/skeleton_shimmer"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Stats row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="66dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/skeleton_shimmer"
+                    android:radius="8dp"/>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="66dp"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="3dp"
+                    android:background="@drawable/skeleton_shimmer"
+                    android:radius="8dp"/>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="66dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/skeleton_shimmer"
+                    android:radius="8dp"/>
+            </LinearLayout>
+
+            <!-- CTAs -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/skeleton_shimmer"
+                android:radius="4dp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/skeleton_shimmer"
+                android:radius="4dp"/>
+        </LinearLayout>
+
+        <!-- Recent Matches Header -->
+        <View
+            android:layout_width="120dp"
+            android:layout_height="17dp"
+            android:layout_marginTop="26dp"
+            android:background="@drawable/skeleton_shimmer"/>
+
+        <!-- Recent matches skeleton list -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/skeletonRecentList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:nestedScrollingEnabled="false"
+            android:overScrollMode="never"
+            tools:listitem="@layout/skeleton_recent_match_item"
+            xmlns:tools="http://schemas.android.com/tools"/>
+    </LinearLayout>
+</ScrollView>

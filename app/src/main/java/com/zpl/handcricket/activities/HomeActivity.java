@@ -64,6 +64,9 @@ public class HomeActivity extends AppCompatActivity {
         btnViewAll.setOnClickListener(v ->
                 startActivity(new Intent(this, MatchHistoryActivity.class)));
 
+        txtRank.setOnClickListener(v ->
+            startActivity(new Intent(this, LeaderboardActivity.class)));
+
         txtAvatar.setOnClickListener(v ->
                 startActivity(new Intent(this, ProfileActivity.class)));
     }
@@ -102,7 +105,11 @@ public class HomeActivity extends AppCompatActivity {
         
         setTeamName(u.teamId);
 
-        txtRank.setText("#" + Math.max(1, 2000 - u.matchesWon * 15));
+        if (u.rank != null && u.rank > 0) {
+            txtRank.setText("#" + u.rank);
+        } else {
+            txtRank.setText("--");
+        }
 
         txtStatPlayed.setText(String.valueOf(u.matchesPlayed));
         txtStatWon.setText(String.valueOf(u.matchesWon));

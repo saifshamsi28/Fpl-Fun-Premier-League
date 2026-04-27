@@ -38,6 +38,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_stat_pill"
+                android:clickable="true"
+                android:focusable="true"
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="6dp"
                 android:textColor="#FFFFFF"

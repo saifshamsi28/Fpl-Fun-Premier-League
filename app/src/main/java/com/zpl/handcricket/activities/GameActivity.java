@@ -2,7 +2,6 @@ package com.zpl.handcricket.activities;
 
 import android.animation.ObjectAnimator;
 import android.animation.AnimatorSet;
-import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -46,6 +45,10 @@ public class GameActivity extends AppCompatActivity implements GameSocket.Listen
     private View ballOverlay;
     private View outFlashOverlay;
     private TextView outOverlay;
+    private View introOverlay;
+    private ImageView introIcon;
+    private TextView introMessage;
+    private TextView introCountdown;
 
     // -- bottom ---
     private TimerRingView timerRing;
@@ -66,10 +69,13 @@ public class GameActivity extends AppCompatActivity implements GameSocket.Listen
     private long introUntilMs = 0L;
     private long currentBallTimerMs = 4500L;
     private final Set<String> processedBallKeys = new HashSet<>();
+    private int introSequence = 0;
 
     // scoreboard dot counts
     private int p1BallsPlayed = 0;
     private int p2BallsPlayed = 0;
+    private int p1RunsTotal = 0;
+    private int p2RunsTotal = 0;
 
     @Override
     protected void onCreate(Bundle s) {
@@ -104,6 +110,10 @@ public class GameActivity extends AppCompatActivity implements GameSocket.Listen
         ballOverlay = findViewById(R.id.ballOverlay);
         outFlashOverlay = findViewById(R.id.outFlashOverlay);
         outOverlay = findViewById(R.id.outOverlay);
+        introOverlay = findViewById(R.id.introOverlay);
+        introIcon = findViewById(R.id.introIcon);
+        introMessage = findViewById(R.id.introMessage);
+        introCountdown = findViewById(R.id.introCountdown);
         timerRing = findViewById(R.id.timerRing);
         tvMessage = findViewById(R.id.tvMessage);
         numButtons = new Button[]{
@@ -185,8 +195,13 @@ public class GameActivity extends AppCompatActivity implements GameSocket.Listen
         tvP2Role.setText(youBatFirst ? "Bowling" : "Batting");
 
         if (data.has("ballsPerInnings")) ballsPerInnings = data.get("ballsPerInnings").getAsInt();
+        p1RunsTotal = 0;
+        p2RunsTotal = 0;
+        p1BallsPlayed = 0;
+        p2BallsPlayed = 0;
         buildDotRow(p1Dots, ballsPerInnings, true);
         buildDotRow(p2Dots, ballsPerInnings, false);
+        updateScoreboardRoles();
 
         // Paint team colors on pills
         applyTeamColor(tvP1Name, safeString(you, "color"), true);
@@ -305,16 +320,15 @@ public class GameActivity extends AppCompatActivity implements GameSocket.Listen
         boolean youAreBatter = batterId.equals(youUserId);
         int youPick = youAreBatter ? batterPick : bowlerPick;
         int oppPick = youAreBatter ? bowlerPick : batterPick;
+        boolean p1IsBatter = youAreBatter; // p1 is always "you" in this screen
 
-        // Reveal fingers
-        handP1.setFingers(youPick);
-        handP1.setLabel(String.valueOf(youPick));
-        handP2.setFingers(oppPick);
-        handP2.setLabel(String.valueOf(oppPick));
+        // Run-hit animation: show both picks as pop badges instead of finger reveal.
+        animatePickBadge(handP1, youPick, youAreBatter);
+        animatePickBadge(handP2, oppPick, !youAreBatter);
 
-        // Scoreboard pills
-        tvP1Role.setText(runsText(p1Runs, youBattingNow));
-        tvP2Role.setText(runsText(p2Runs, !youBattingNow));
+        p1RunsTotal = p1Runs;
+        p2RunsTotal = p2Runs;
+        updateScoreboardRoles();
 
         // Toast banner
         String who = youAreBatter ? tvP1Name.getText().toString() : tvP2Name.getText().toString();
@@ -328,14 +342,14 @@ public class GameActivity extends AppCompatActivity implements GameSocket.Listen
         timerRing.setNumber(wicket ? 0 : runs);
 
         // Update ball dots
-        boolean p1IsBatter = youAreBatter; // "p1" is always you in our UI
         int batterDotIdx = (p1IsBatter ? p1BallsPlayed++ : p2BallsPlayed++);
         LinearLayout container = p1IsBatter ? p1Dots : p2Dots;
         if (batterDotIdx < container.getChildCount()) {
             TextView dot = (TextView) container.getChildAt(batterDotIdx);
             int runForDot = wicket ? 0 : runs;
             setDotValue(dot, runForDot, wicket);
-            animateRunToDot(runForDot, wicket, dot);
+            View batterHand = p1IsBatter ? handP1 : handP2;
+            animateRunToDot(batterPick, wicket, dot, batterHand);
         }
 
         if (wicket) {
@@ -361,7 +375,7 @@ public class GameActivity extends AppCompatActivity implements GameSocket.Listen
         dot.setBackground(gd);
     }
 
-    private void animateRunToDot(int runs, boolean wicket, TextView targetDot) {
+    private void animateRunToDot(int batterPick, boolean wicket, TextView targetDot, View sourceView) {
         ViewGroup root = findViewById(android.R.id.content);
         if (root == null) return;
 
@@ -370,14 +384,14 @@ public class GameActivity extends AppCompatActivity implements GameSocket.Listen
         ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(size, size);
         flying.setLayoutParams(lp);
         flying.setGravity(Gravity.CENTER);
-        flying.setText(String.valueOf(runs));
+        flying.setText(wicket ? "W" : String.valueOf(batterPick));
         flying.setTextColor(Color.WHITE);
         flying.setTextSize(12);
         GradientDrawable bg = new GradientDrawable();
         bg.setShape(GradientDrawable.OVAL);
         if (wicket) {
             bg.setColor(Color.parseColor("#EF4444"));
-        } else if (runs == 0) {
+        } else if (batterPick == 0) {
             bg.setColor(Color.parseColor("#0E1A3B"));
         } else {
             bg.setColor(Color.parseColor("#16A34A"));
@@ -385,7 +399,7 @@ public class GameActivity extends AppCompatActivity implements GameSocket.Listen
         bg.setStroke(dp(1), Color.WHITE);
         flying.setBackground(bg);
 
-        float[] source = centerInRoot(timerRing, root);
+        float[] source = centerInRoot(sourceView, root);
         float[] target = centerInRoot(targetDot, root);
         flying.setX(source[0] - size / 2f);
         flying.setY(source[1] - size / 2f);
@@ -405,6 +419,47 @@ public class GameActivity extends AppCompatActivity implements GameSocket.Listen
         ui.postDelayed(() -> root.removeView(flying), 460);
     }
 
+    private void animatePickBadge(View sourceView, int pick, boolean batterPick) {
+        ViewGroup root = findViewById(android.R.id.content);
+        if (root == null) return;
+
+        TextView badge = new TextView(this);
+        int size = dp(36);
+        badge.setLayoutParams(new ViewGroup.LayoutParams(size, size));
+        badge.setGravity(Gravity.CENTER);
+        badge.setText(String.valueOf(pick));
+        badge.setTextColor(Color.WHITE);
+        badge.setTextSize(13);
+        badge.setTypeface(badge.getTypeface(), android.graphics.Typeface.BOLD);
+
+        GradientDrawable bg = new GradientDrawable();
+        bg.setShape(GradientDrawable.OVAL);
+        bg.setColor(Color.parseColor(batterPick ? "#16A34A" : "#E63946"));
+        bg.setStroke(dp(1), Color.WHITE);
+        badge.setBackground(bg);
+
+        float[] source = centerInRoot(sourceView, root);
+        badge.setX(source[0] - size / 2f);
+        badge.setY(source[1] - size / 2f);
+        badge.setScaleX(0.25f);
+        badge.setScaleY(0.25f);
+        badge.setAlpha(0f);
+        root.addView(badge);
+
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(badge, "alpha", 0f, 1f, 0f);
+        ObjectAnimator sx = ObjectAnimator.ofFloat(badge, "scaleX", 0.25f, 1.2f, 0.9f);
+        ObjectAnimator sy = ObjectAnimator.ofFloat(badge, "scaleY", 0.25f, 1.2f, 0.9f);
+        ObjectAnimator up = ObjectAnimator.ofFloat(badge, "translationY", 0f, -dp(14));
+
+        AnimatorSet set = new AnimatorSet();
+        set.playTogether(alpha, sx, sy, up);
+        set.setDuration(420);
+        set.setInterpolator(new AccelerateDecelerateInterpolator());
+        set.start();
+
+        ui.postDelayed(() -> root.removeView(badge), 460);
+    }
+
     private float[] centerInRoot(View child, View root) {
         int[] childLoc = new int[2];
         int[] rootLoc = new int[2];
@@ -415,21 +470,27 @@ public class GameActivity extends AppCompatActivity implements GameSocket.Listen
         return new float[]{cx, cy};
     }
 
-    private String runsText(int runs, boolean batting) {
-        return batting ? runs + " runs" : "Bowling";
+    private void updateScoreboardRoles() {
+        tvP1Role.setText(roleText(p1RunsTotal, p1BallsPlayed, youBattingNow));
+        tvP2Role.setText(roleText(p2RunsTotal, p2BallsPlayed, !youBattingNow));
+    }
+
+    private String roleText(int runs, int ballsPlayed, boolean battingNow) {
+        if (battingNow) {
+            return runs + " runs • Batting";
+        }
+        if (ballsPlayed > 0) {
+            return runs + " runs • Bowling";
+        }
+        return "Yet to bat";
     }
 
     private void handleInningsSwitch(JsonObject d) {
-        int target = d.has("target") ? d.get("target").getAsInt() : 0;
         String newBatter = d.get("newBatterId").getAsString();
         youBattingNow = newBatter.equals(youUserId);
-
-        tvP1Role.setText(youBattingNow ? "Batting" : "Bowling");
-        tvP2Role.setText(youBattingNow ? "Bowling" : "Batting");
+        updateScoreboardRoles();
 
         showIntroPhase(youBattingNow ? R.string.you_are_batting : R.string.you_are_bowling, 3000L);
-        tvChant.setVisibility(View.VISIBLE);
-        tvChant.setText("INNINGS 2");
     }
 
     private void handleMatchEnd(JsonObject d) {
@@ -447,6 +508,7 @@ public class GameActivity extends AppCompatActivity implements GameSocket.Listen
     }
 
     private void showIntroPhase(int messageResId, long durationMs) {
+        final int thisIntro = ++introSequence;
         waitingForIntro = true;
         introUntilMs = System.currentTimeMillis() + durationMs;
 
@@ -456,26 +518,42 @@ public class GameActivity extends AppCompatActivity implements GameSocket.Listen
         handP2.setFingers(0);
         handP2.setLabel("");
 
-        tvMessage.setText(messageResId);
-        tvChant.setVisibility(View.VISIBLE);
-        tvChant.setText(messageResId == R.string.you_are_batting ? "YOU ARE BATTING" : "YOU ARE BOWLING");
+        tvMessage.setText(R.string.pick_before_timer);
+        tvChant.setVisibility(View.GONE);
 
-        ballOverlay.setVisibility(View.VISIBLE);
-        ballOverlay.setScaleX(0.2f);
-        ballOverlay.setScaleY(0.2f);
-        ballOverlay.setAlpha(0f);
-        ballOverlay.animate().alpha(1f).scaleX(1.6f).scaleY(1.6f).setDuration(350).start();
+        timerRing.setVisibility(View.INVISIBLE);
+        introOverlay.setVisibility(View.VISIBLE);
+        introMessage.setText(messageResId);
+        introIcon.setImageResource(messageResId == R.string.you_are_batting
+                ? R.drawable.ic_bat
+                : R.drawable.ic_ball);
+        int steps = Math.max(1, (int) Math.ceil(durationMs / 1000.0));
+        introCountdown.setText(String.valueOf(steps));
 
-        timerRing.startCountdownSequence(durationMs, 3, 2, 1);
+        startIntroCountdown(durationMs, thisIntro);
+
         ui.postDelayed(() -> {
+            if (thisIntro != introSequence) return;
             waitingForIntro = false;
-            ballOverlay.setVisibility(View.GONE);
-            tvChant.setVisibility(View.GONE);
+            introOverlay.setVisibility(View.GONE);
+            timerRing.setVisibility(View.VISIBLE);
             if (queuedBallStart != null) {
                 startSelectionPhase(queuedBallStart);
                 queuedBallStart = null;
             }
         }, durationMs);
+    }
+
+    private void startIntroCountdown(long durationMs, int sequenceId) {
+        int steps = Math.max(1, (int) Math.ceil(durationMs / 1000.0));
+        for (int i = 0; i < steps; i++) {
+            final int value = steps - i;
+            ui.postDelayed(() -> {
+                if (sequenceId == introSequence && introOverlay.getVisibility() == View.VISIBLE) {
+                    introCountdown.setText(String.valueOf(value));
+                }
+            }, i * 1000L);
+        }
     }
 
     private void showOutPhase() {
@@ -525,7 +603,9 @@ public class GameActivity extends AppCompatActivity implements GameSocket.Listen
         handP2.setFingers(0); handP2.setLabel("");
         resetNumPad();
         tvChant.setVisibility(View.GONE);
+        introOverlay.setVisibility(View.GONE);
         ballOverlay.setVisibility(View.GONE);
+        timerRing.setVisibility(View.VISIBLE);
         tvMessage.setText(youBattingNow ? R.string.you_are_batting : R.string.you_are_bowling);
         timerRing.startCountdownSequence(currentBallTimerMs, 3, 2, 1);
     }

@@ -32,6 +32,9 @@
         <activity android:name=".activities.HomeActivity"
             android:theme="@style/Theme.ZplHandCricket.NoActionBar" />
 
+        <activity android:name=".activities.LeaderboardActivity"
+            android:theme="@style/Theme.ZplHandCricket.NoActionBar" />
+
         <activity android:name=".activities.ProfileActivity"
             android:theme="@style/Theme.ZplHandCricket.NoActionBar" />
 

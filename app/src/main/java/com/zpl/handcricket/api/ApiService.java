@@ -1,6 +1,7 @@
 package com.zpl.handcricket.api;
 
 import com.zpl.handcricket.models.AuthResponse;
+import com.zpl.handcricket.models.LeaderboardEntry;
 import com.zpl.handcricket.models.MatchDetail;
 import com.zpl.handcricket.models.MatchSummary;
 import com.zpl.handcricket.models.PageResponse;
@@ -14,6 +15,7 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.PUT;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -28,6 +30,9 @@ public interface ApiService {
 
     @GET("api/me")
     Call<User> me();
+
+    @PUT("api/me")
+    Call<User> updateProfile(@Body Map<String, String> body);
 
     @GET("api/teams")
     Call<List<Team>> teams();
@@ -64,4 +69,10 @@ public interface ApiService {
     // Detail of a single match, including ball-by-ball
     @GET("api/matches/{id}")
     Call<MatchDetail> matchDetail(@Path("id") String id);
+
+    @GET("api/leaderboard")
+    Call<PageResponse<LeaderboardEntry>> leaderboard(
+            @Query("page") int page,
+            @Query("size") int size,
+            @Query("period") String period);
 }

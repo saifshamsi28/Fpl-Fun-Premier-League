@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,33 +28,84 @@ import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText etUser, etPass;
+    private EditText etUser, etPass, etFullName, etEmail, etCity, etFavoritePlayer;
     private Button btnLogin, btnSignup;
+    private TextView tabLogin, tabSignup, txtModeHint;
+    private View signupFields;
+    private boolean signupMode = false;
 
     @Override
     protected void onCreate(Bundle s) {
         super.onCreate(s);
         setContentView(R.layout.activity_login);
+
         etUser = findViewById(R.id.etUsername);
         etPass = findViewById(R.id.etPassword);
+        etFullName = findViewById(R.id.etFullName);
+        etEmail = findViewById(R.id.etEmail);
+        etCity = findViewById(R.id.etCity);
+        etFavoritePlayer = findViewById(R.id.etFavoritePlayer);
         btnLogin = findViewById(R.id.btnLogin);
         btnSignup = findViewById(R.id.btnSignup);
+        tabLogin = findViewById(R.id.tabLogin);
+        tabSignup = findViewById(R.id.tabSignup);
+        txtModeHint = findViewById(R.id.txtModeHint);
+        signupFields = findViewById(R.id.signupFields);
 
-        btnLogin.setOnClickListener(v -> auth(false));
-        btnSignup.setOnClickListener(v -> auth(true));
+        tabLogin.setOnClickListener(v -> setMode(false));
+        tabSignup.setOnClickListener(v -> setMode(true));
+
+        btnLogin.setOnClickListener(v -> auth(signupMode));
+        btnSignup.setOnClickListener(v -> setMode(!signupMode));
+
+        setMode(false);
     }
 
     private void auth(boolean signup) {
         String u = etUser.getText().toString().trim();
         String p = etPass.getText().toString();
-        if (u.length() < 2 || p.length() < 4) {
-            Toast.makeText(this, "Enter username and password (min 4 chars)", Toast.LENGTH_SHORT).show();
+        if (u.length() < 3) {
+            Toast.makeText(this, "Username must be at least 3 characters", Toast.LENGTH_SHORT).show();
             return;
         }
+        if (p.length() < 6 && signup) {
+            Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         setBusy(true);
         Map<String, String> body = new HashMap<>();
         body.put("username", u);
         body.put("password", p);
+
+        if (signup) {
+            String fullName = etFullName.getText().toString().trim();
+            String email = etEmail.getText().toString().trim();
+            String city = etCity.getText().toString().trim();
+            String favoritePlayer = etFavoritePlayer.getText().toString().trim();
+
+            if (fullName.length() < 2) {
+                setBusy(false);
+                Toast.makeText(this, "Please enter your full name", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!email.contains("@") || !email.contains(".")) {
+                setBusy(false);
+                Toast.makeText(this, "Please enter a valid email", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (city.length() < 2) {
+                setBusy(false);
+                Toast.makeText(this, "Please enter your city", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            body.put("fullName", fullName);
+            body.put("email", email);
+            body.put("city", city);
+            body.put("favoritePlayer", favoritePlayer);
+        }
+
         Call<AuthResponse> call = signup
                 ? ApiClient.get().signup(body)
                 : ApiClient.get().login(body);
@@ -79,6 +131,23 @@ public class LoginActivity extends AppCompatActivity {
                         "Unable to reach the server. Check your connection and try again.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void setMode(boolean signup) {
+        this.signupMode = signup;
+
+        signupFields.setVisibility(signup ? View.VISIBLE : View.GONE);
+        txtModeHint.setText(signup ? "Create your profile to start ranking" : "Log in to continue");
+
+        tabLogin.setBackgroundResource(signup ? R.drawable.bg_auth_tab_inactive : R.drawable.bg_auth_tab_active);
+        tabSignup.setBackgroundResource(signup ? R.drawable.bg_auth_tab_active : R.drawable.bg_auth_tab_inactive);
+
+        tabLogin.setTextColor(signup ? 0xFF0E1A3B : 0xFFFFFFFF);
+        tabSignup.setTextColor(signup ? 0xFFFFFFFF : 0xFF0E1A3B);
+
+        btnLogin.setText(signup ? "Create Account" : "Log In");
+        btnLogin.setBackgroundResource(signup ? R.drawable.bg_cta_red : R.drawable.bg_continue_btn);
+        btnSignup.setText(signup ? "Already have an account? Log In" : "Don't have an account? Create one");
     }
 
     private String friendlyAuthMessage(Response<AuthResponse> response, boolean signup) {
@@ -118,6 +187,8 @@ public class LoginActivity extends AppCompatActivity {
     private void setBusy(boolean b) {
         btnLogin.setEnabled(!b);
         btnSignup.setEnabled(!b);
+        tabLogin.setEnabled(!b);
+        tabSignup.setEnabled(!b);
     }
 
     @Override
